@@ -107,3 +107,27 @@ cat("Chunked Parallel Processing Time: ", parallel_time_chunked["elapsed"], "sec
 With larger chunks, the parallel process performs better than the serial processing, likely due to reduced overhead in task distribution and communication. The parallel processes that use replicate with more than 1 replication distribute work more efficiently.
 
 ***Question 3***
+
+Estimate coverage of a percentile bootstrap confidence interval for the following scenario: sample of size 50 from an exponential distribution with mean 1.
+
+```{r}
+
+sample_mean <- 1
+
+q3_data <- rexp(50,1)
+
+# Generate 10000 samples 
+boot_means <- foreach(i = 1:10000, .combine = "c") %do%{
+     
+     mean(sample(q3_data, 50, replace = TRUE))
+     
+}
+
+
+# 95% percentile CI
+  quantile1 <- quantile(boot_means, 0.025)
+  quantile3 <- quantile(boot_means, 0.975)
+
+  #Unbiases CI
+  c(-quantile3 + 2 * sample_mean, -quantile1 + 2 * sample_mean)
+```
