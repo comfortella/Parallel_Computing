@@ -1,0 +1,26 @@
+project:
+  type: book
+  title: "Parallel Computing practical"
+  output-dir: _book
+  
+book: 
+  chapters: 
+    - index.qmd
+    - Question 1.qmd
+    - Question 2.qmd
+    - Question 3.qmd
+    - Question 4.qmd
+    - Question 5.qmd
+    
+    
+website: 
+  navbar:
+    left: 
+      - href: Question 1.qmd
+        text: Question 1
+      - href: Question 2.qmd
+        text: Question 2
+      - href: Question 3.qmd
+        text: Question 3
+      - href: Question 5.qmd
+        text: Question 5

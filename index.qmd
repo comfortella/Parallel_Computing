@@ -1,0 +1,9 @@
+---
+title: "index"
+format: html
+editor: visual
+---
+
+# **Parallel Computing Practical**
+
+GitHub
