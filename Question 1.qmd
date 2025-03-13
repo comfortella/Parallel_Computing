@@ -1,0 +1,23 @@
+---
+title: "Question 1"
+format: html
+editor: visual
+---
+
+## 
+
+***SetUp***
+
+```{r}
+library(foreach)
+
+B <- 100
+
+
+Q1 <- foreach(i=1:B, .combine = "rbind") %do% {
+      rs_exp <- rexp(B, 1) # generating exponential random variables
+      mean_results <- mean(rs_exp) 
+      variance_results  <- var(rs_exp)
+      c(mean = mean_results,variance = variance_results)
+}
+```
