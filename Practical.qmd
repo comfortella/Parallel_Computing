@@ -4,23 +4,106 @@ format: html
 editor: visual
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+***Question 1***
 
 ```{r}
-1 + 1
+
+library(foreach)
+
+B <- 100 # size of random exponential numbers
+
+Q1 <- foreach(i=1:B, .combine = "rbind") %do% {
+      rs_exp <- rexp(B, 1) # generating exponential random variables
+      mean_results <- mean(rs_exp) 
+      variance_results  <- var(rs_exp)
+      c(mean = mean_results,variance = variance_results)
+}
 ```
 
-You can add options to executable code like this
+***Question 2***
+
+*SetUp*
 
 ```{r}
-#| echo: false
-2 * 2
+library(doParallel)
+library(MASS)
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+*Serial Processing time:*
+
+```{r}
+
+# System time for the serial processing time
+
+(serial_time <- system.time({
+  serial_results <- foreach(i = 1:1000, .combine = c) %do% {
+    # Bootstrap sample for each iteration
+    sample_data <- sample(galaxies, replace = TRUE)  
+    median(sample_data)  # Compute median
+  }
+}))
+```
+
+*Parallel Processing:*
+
+```{r}
+
+# Only use 1 less the total number of cores for the laptop 
+cores <- detectCores() - 1
+
+# Create and register parallel cluster
+
+c1 <- makeCluster(cores)
+registerDoParallel(c1)
+
+# System time for the parallel processing time
+
+(parallel_time <- system.time({
+  parallel_results <- foreach(i = 1:1000, .combine = c, .packages = "MASS")%dopar% {
+    sample_data <- sample(galaxies, replace = TRUE)  
+    median(sample_data)  
+  }
+}))
+
+
+stopCluster(c1)
+```
+
+Comparing the processing time between serial and parallel processing :\
+
+```{r}
+cat("Serial Processing Time: ", serial_time["elapsed"], "seconds\n")
+cat("Parallel Processing Time: ", parallel_time["elapsed"], "seconds\n")
+
+```
+
+The parallel process has a higher processing time than the serial process. This might be due to the small data size, where the overhead of managing parallel tasks outweighs the benefits of parallel execution.
+
+*Experiment with Larger Chunks:*
+
+```{r}
+
+# Create and register parallel cluster
+c2 <- makeCluster(cores)
+registerDoParallel(c2)
+
+
+# Grouping into chunks of 1000 bootstrap samples
+parallel_time_chunked <- system.time({
+  parallel_results_chunked <- foreach(i = 1:100, .combine = c, .packages = "MASS") %dopar% {
+    # Compute 10 medians per iteration
+    replicate(10, median(sample(galaxies, replace = TRUE)))  
+  }
+})
+
+stopCluster(c2)
+
+
+print(parallel_time_chunked)
+
+cat("Chunked Parallel Processing Time: ", parallel_time_chunked["elapsed"], "seconds\n")
+```
+
+With larger chunks, the parallel process performs better than the serial processing, likely due to reduced overhead in task distribution and communication. The parallel processes that use replicate with more than 1 replication distribute work more efficiently.
+
+***Question 3***
