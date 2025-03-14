@@ -6,4 +6,4 @@ editor: visual
 
 # **Parallel Computing Practical**
 
-GitHub
+GitHub : github.com/comfortella/Parallel_Computing
