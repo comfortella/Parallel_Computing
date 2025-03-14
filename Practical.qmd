@@ -159,6 +159,16 @@ unbiased_CI_tbl
 
 ```{r}
 
-seed(1234)
+set.seed(1234)
 
+# Create the iterator object
+
+iter_data <- irnorm(n = 3, mean = 0, sd = 1, count = 5)
+
+# foreach vector compute the maximum values
+max_values <- foreach(i = 1:3, .combine = c) %do%{
+  max(iterators::nextElem(iter_data))
+}
+
+max_values
 ```
