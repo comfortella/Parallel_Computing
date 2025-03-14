@@ -4,11 +4,24 @@ format: html
 editor: visual
 ---
 
+**SetUp**\
+
+```{r}
+
+#All the libraries used in this practical
+library(foreach)
+library(doParallel)
+library(MASS)
+library(tibble)
+library(iterators)
+
+```
+
 ***Question 1***
 
 ```{r}
 
-library(foreach)
+
 
 B <- 100 # size of random exponential numbers
 
@@ -21,13 +34,6 @@ Q1 <- foreach(i=1:B, .combine = "rbind") %do% {
 ```
 
 ***Question 2***
-
-*SetUp*
-
-```{r}
-library(doParallel)
-library(MASS)
-```
 
 *Serial Processing time:*
 
@@ -112,6 +118,7 @@ Estimate coverage of a percentile bootstrap confidence interval for the followin
 
 ```{r}
 
+
 sample_mean <- 1
 
 q3_data <- rexp(50,1)
@@ -127,7 +134,31 @@ boot_means <- foreach(i = 1:10000, .combine = "c") %do%{
 # 95% percentile CI
   quantile1 <- quantile(boot_means, 0.025)
   quantile3 <- quantile(boot_means, 0.975)
+  
+  # Compute the unbiased CI
+unbiased_CI <- c(
+  lower_CI = -quantile3 + 2 * sample_mean,
+  upper_CI = -quantile1 + 2 * sample_mean
+)
 
-  #Unbiases CI
-  c(-quantile3 + 2 * sample_mean, -quantile1 + 2 * sample_mean)
+
+cat("95% Unbiased Confidence Interval:\n")
+
+
+# Create a tibble for better formatting
+unbiased_CI_tbl <- tibble(
+   "lower_CI" =round( -quantile3 + 2 * sample_mean,3),
+  "upper_CI" =round( -quantile1 + 2 * sample_mean,3)
+)
+
+# Print as a table
+unbiased_CI_tbl
+```
+
+***Question 4***
+
+```{r}
+
+seed(1234)
+
 ```
